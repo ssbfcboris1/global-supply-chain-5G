@@ -1,7 +1,7 @@
-// Neo4j graph database Cypher scripts - to be executed on Neo4j
+// Cypher script - to be executed on Neo4j graph database
 // https://neo4j.com/developer/neo4j-desktop/
 
-// Create 3 nodes of the Product_Brand_Owner type, Samsung
+// Create 3 nodes of Product_Brand_Owner type, Samsung
 // being both a Product_Brand_Owner and a Chips_Supplier: 
 
 CREATE 
@@ -12,7 +12,7 @@ distance_to_USA:6941}),
 (Samsung:Product_Brand_Owner {name:"Samsung", 
 PermID:4295882451, distance_to_USA:5665}) 
 
-// Create nodes of the Final_Assembler type:
+// Create nodes of Final_Assembler type:
 
 CREATE (Foxconn:Final_Assembler {name:'Foxconn', PermID:5000069307,
 distance_to_USA:6490})
@@ -23,7 +23,7 @@ distance_to_USA:6490})
 CREATE (Goertek:Final_Assembler {name:'Goertek', PermID:4298008764,
 distance_to_USA:6491})
 
-// Create notes of the Chips_Supplier type:
+// Create notes of Chips_Supplier type:
 
 CREATE (QCOM:Chips_Supplier {name:"Qualcomm", PermID:4295907706,
 distance_to_USA:0})
@@ -35,7 +35,8 @@ distance_to_USA:0})
 
 // Create Apple's supply-chain Relationships.  
 // Some nodes possess multiple relationships, as in the case of
-// Qualcomm, which supplies to both Apple and Foxconn.
+// Qualcomm, whose supply contract is with Apple, but ships
+// the goods (5G chips) to Foxconn, which does the final iPhone assembly.
 
 CREATE
 (Foxconn)-[:DOES_FINAL_ASSEMBLY
@@ -105,27 +106,20 @@ CREATE
 MATCH (AAPL) RETURN AAPL
 
 
-//Shortest path between Apple and ARM.
-//Apple just went through a bruising patent-law suit 
-//with Qualcomm, and now wants to take a core component 
-//of the smart phone under its own control.  It heard good
-//words about ARM Holdings, a UK-based chip designer, and want
-//to find the shortest route to it.
+// Shortest path between Apple and ARM.
+
+// Apple just went through a bruising patent-law suit 
+// with Qualcomm, and now wants to take the 5G communication chip, a core component 
+// of the smart phone, under its own control.  It heard good
+// words about ARM Holdings, a UK-based chip designer, and want
+// to find the shortest route to establishing a relationship.
 
 //First, let's find out who are ARM's existing customers:
 
 MATCH (Arm) return (Arm)
 
-//Shortest path between Apple and ARM.
-//Apple just went through a bruising patent-law suit 
-//with Qualcomm, and now wants to take a core component 
-//of the smart phone under its own control.  It heard good
-//words about ARM Holdings, a UK-based chip designer, and want
-//to find the shortest route to it.//
-
-//We will help Apple by utilizing neo4j's built-in implementation
-//of the shortestPath algorithm.
-//https://neo4j.com/docs/graph-algorithms/current/labs-algorithms/shortest-path/
+// We then utilize neo4j's built-in implementation of the "shortestPath" algorithm:
+// https://neo4j.com/docs/graph-algorithms/current/labs-algorithms/shortest-path/
 
 MATCH p=shortestPath(
 (AAPL:Product_Brand_Owner {name:"Apple"}
