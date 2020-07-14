@@ -1,0 +1,135 @@
+// Neo4j graph database Cypher scripts - to be executed on Neo4j
+// https://neo4j.com/developer/neo4j-desktop/
+
+// Create 3 nodes of the Product_Brand_Owner type, Samsung
+// being both a Product_Brand_Owner and a Chips_Supplier: 
+
+CREATE 
+(AAPL:Product_Brand_Owner {name:"Apple", PermID:4295905573,
+distance_to_USA:0}),
+(Huawei:Product_Brand_Owner {name:"Huawei", PermID:4296309931,
+distance_to_USA:6941}),
+(Samsung:Product_Brand_Owner {name:"Samsung", 
+PermID:4295882451, distance_to_USA:5665}) 
+
+// Create nodes of the Final_Assembler type:
+
+CREATE (Foxconn:Final_Assembler {name:'Foxconn', PermID:5000069307,
+distance_to_USA:6490})
+CREATE (Wistron:Final_Assembler {name:'Wistron', PermID:4295892600,
+distance_to_USA:6490})
+CREATE (Pegatron:Final_Assembler {name:'Pegatron', PermID:5000431932,
+distance_to_USA:6490})
+CREATE (Goertek:Final_Assembler {name:'Goertek', PermID:4298008764,
+distance_to_USA:6491})
+
+// Create notes of the Chips_Supplier type:
+
+CREATE (QCOM:Chips_Supplier {name:"Qualcomm", PermID:4295907706,
+distance_to_USA:0})
+CREATE (TSMC:Chips_Supplier {name:"Taiwan Semiconductor", PermID:4295891425, distance_to_USA:6490})
+CREATE (INTC:Chips_Supplier {name:"Intel", PermID:4295907706,
+distance_to_USA:0})
+CREATE (RF_Micro:Chips_Supplier {name:"RF Micro Devices", PermID:5000122347,
+distance_to_USA:0})
+
+// Create Apple's supply-chain Relationships.  
+// Some nodes possess multiple relationships, as in the case of
+// Qualcomm, which supplies to both Apple and Foxconn.
+
+CREATE
+(Foxconn)-[:DOES_FINAL_ASSEMBLY
+ {Annual_supply_value_Millions:[86000]}]->(AAPL),
+(Wistron)-[:DOES_FINAL_ASSEMBLY]->(AAPL),
+(Pegatron)-[:DOES_FINAL_ASSEMBLY]->(AAPL),
+(Goertek)-[:DOES_FINAL_ASSEMBLY]->(AAPL),
+
+(QCOM)-[:SUPPLY_COMPONENTS]->(AAPL),
+(QCOM)-[:SHIP_TO]->(Foxconn),
+(QCOM)-[:SUPPLY_COMPONENTS]->(Samsung),
+
+(INTC)-[:SUPPLY_COMPONENTS]->(AAPL),
+(INTC)-[:SHIP_TO]->(Foxconn),
+(INTC)-[:SUPPLY_COMPONENTS]->(Samsung),
+(INTC)-[:SUPPLY_COMPONENTS]->(Huawei),
+
+(Samsung)-[:SUPPLY_COMPONENTS]->(AAPL),
+(Samsung)-[:SHIP_TO]->(Foxconn),
+
+(TSMC)-[:SUPPLY_COMPONENTS]->(AAPL),
+(TSMC)-[:SHIP_TO]->(Foxconn),
+(TSMC)-[:SUPPLY_COMPONENTS]->(QCOM),
+
+(RF_Micro)-[:SUPPLY_COMPONENTS]->(AAPL),
+(RF_Micro)-[:SHIP_TO]->(Foxconn)
+
+// Huawei's supply-chain entities 
+
+// Chips_Designers 
+CREATE (MediaTek:Chips_Supplier {name:"MediaTek", PermID:4295891739})
+CREATE (ARM:Chips_Supplier {name:"ARM Holdings", PermID:4295895971})
+
+// Huawei's supply-chain Relationships
+
+CREATE 
+(MediaTek)-[:DESIGN_CHIPS_FOR]->(Huawei),
+(MediaTek)-[:PARTNER_WITH {cooperation:['5G chips on PC']}]->(Intel),
+(ARM)-[:DESIGN_CHIPS_FOR]->(Huawei),
+(ARM)-[:DESIGN_CHIPS_FOR]->(Intel),
+(ARM)-[:DESIGN_CHIPS_FOR]->(TSMC),
+(ARM)-[:DESIGN_CHIPS_FOR]->(Samsung),
+(ARM)-[:DESIGN_CHIPS_FOR]->(Qualcomm),
+(TSMC)-[:SUPPLY_COMPONENTS]->(Huawei),
+(TSMC)-[:SUPPLY_COMPONENTS]->(MediaTek)
+
+// Samsung's supply-chain entities
+
+CREATE 
+(RF_Micro)-[:SUPPLY_COMPONENTS]->(Samsung),
+(MediaTek)-[:SUPPLY_COMPONENTS]->(Samsung)
+
+
+// Apple - Huawei - Samsung competitive relationships
+
+CREATE 
+(Samsung)-[:COMPETES_WITH]->(AAPL),
+(Samsung)-[:COMPETES_WITH ]->(Huawei),
+(Huawei)-[:COMPETES_WITH ]->(AAPL)
+
+
+
+//      *** Queries ***
+
+// A visualization of Apple's supply chain and competition:
+
+MATCH (AAPL) RETURN AAPL
+
+
+//Shortest path between Apple and ARM.
+//Apple just went through a bruising patent-law suit 
+//with Qualcomm, and now wants to take a core component 
+//of the smart phone under its own control.  It heard good
+//words about ARM Holdings, a UK-based chip designer, and want
+//to find the shortest route to it.
+
+//First, let's find out who are ARM's existing customers:
+
+MATCH (Arm) return (Arm)
+
+//Shortest path between Apple and ARM.
+//Apple just went through a bruising patent-law suit 
+//with Qualcomm, and now wants to take a core component 
+//of the smart phone under its own control.  It heard good
+//words about ARM Holdings, a UK-based chip designer, and want
+//to find the shortest route to it.//
+
+//We will help Apple by utilizing neo4j's built-in implementation
+//of the shortestPath algorithm.
+//https://neo4j.com/docs/graph-algorithms/current/labs-algorithms/shortest-path/
+
+MATCH p=shortestPath(
+(AAPL:Product_Brand_Owner {name:"Apple"}
+)-[*]-(ARM:Chips_Supplier {name:"ARM Holdings"})
+)
+RETURN p
+
