@@ -5,11 +5,11 @@ Make predictions/recommendations about the shortest, most economical delivery ro
 Technology stack and data sources:
 
   - Neo4j graph database
-      https://neo4j.com/developer/graph-database/
+     * https://neo4j.com/developer/graph-database/
   - Various Python machine learning and data visualization libraries
   - API calls to:
-      https://permid.org/
-      https://labs.refinitiv.com/dataexplorationtool
+      * https://permid.org/
+      * https://labs.refinitiv.com/dataexplorationtool
   
 Algorithms and data science techniques, applied and under development:
   - Pathfinding and search (finds optimal path through Shortest Distance and other algorithms; evaluates route availability, quality)
