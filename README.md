@@ -9,7 +9,7 @@ Technology stack and data sources:
   - Various Python machine learning and data visualization libraries
   - API calls to:
       * https://permid.org/
-      * https://labs.refinitiv.com/dataexplorationtool
+      * https://developers.refinitiv.com/knowledge-graph-poc/knowledge-graph-feed-api-poc
   
 Algorithms and data science techniques, applied and under development:
   - Pathfinding and search (finds optimal path through Shortest Distance and other algorithms; evaluates route availability, quality)
